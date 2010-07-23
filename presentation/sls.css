@@ -1,0 +1,15 @@
+h1 {
+  color: #786e6e;
+  font-family: sans-serif;
+}
+
+h2 {
+  color: #64c8ca;
+  font-size: 3.5em;
+}
+
+.slide {
+  background-image: url('/image/sls-209x36.png');
+  background-repeat: no-repeat;
+  background-position: right bottom;
+}
