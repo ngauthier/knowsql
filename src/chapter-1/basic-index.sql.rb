@@ -1,4 +1,17 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'active_record'
+
+def bench
+  start = Time.now
+  yield
+  finish = Time.now
+  finish - start
+end
+
+def sql(query)
+  ActiveRecord::Base.connection.execute(query)
+end
 
 text_lines = File.read(File.join(File.dirname(__FILE__), '..', '..', 'data', 'romeo_and_juliet.txt')).split("\n")
 
@@ -7,44 +20,56 @@ text_lines.each_with_index do |content, line|
   data << {:line => line, :content => content}
 end
 
+total_lines = data.size
 
-def bench(query)
-  puts %{
-    delete from benchmark;
-    insert into benchmark (stamp) values (NOW());
-    #{query}
-    insert into benchmark (stamp) values (NOW());
-    select (finish.stamp - start.stamp) as duration from
-      (select stamp from benchmark limit 1) as start,
-      (select stamp from benchmark limit 1 offset 1) as finish;
-  }
+ActiveRecord::Base.establish_connection({
+  :database => 'knowsql_examples', :adapter => 'postgresql'
+})
+
+sql %{
+  drop table if exists romeo_and_juliet_lines;
+
+  drop sequence romeo_and_juliet_lines_id_seq;
+  create sequence romeo_and_juliet_lines_id_seq;
+  
+  create table romeo_and_juliet_lines ( 
+    id integer primary key default nextval('romeo_and_juliet_lines_id_seq'),
+    line_no integer,
+    contents varchar(256) 
+  );
+}
+
+class RomeoAndJulietLine < ActiveRecord::Base; end
+
+data.each do |row|
+  sql %{insert into romeo_and_juliet_lines (line_no, contents) values (
+    #{row[:line]}, #{ActiveRecord::Base.connection.quote(row[:content])}
+  );}
+end
+
+puts "Inserted #{RomeoAndJulietLine.count} lines of Romeo and Juliet"
+
+puts "Performing 1000 finds without an index"
+without_index = bench do
+  1000.times do
+    sql %{select * from romeo_and_juliet_lines where line_no = #{rand(total_lines)}}
+  end
+end
+
+sql %{
+  create index romeo_and_juliet_lines_line_no_idx on romeo_and_juliet_lines(line_no);
+}
+
+puts "Performing 1000 find with an index"
+with_index = bench do
+  1000.times do
+    sql %{select * from romeo_and_juliet_lines where line_no = #{rand(total_lines)}}
+  end
 end
 
 puts %{
-  drop table if exists romeo_and_juliet;
-  drop table if exists benchmark;
-  create table romeo_and_juliet ( line_no integer, contents varchar(256) );
-  create index line_no_idx on romeo_and_juliet(line_no);
-  create table benchmark ( stamp timestamp );
-
-  insert into romeo_and_juliet (line_no, contents) values
-    #{data.collect{|row| "(#{row[:line]}, E'#{row[:content].gsub("'", "''")}')"}.join(",\n")}
-  ;
-
+without index #{without_index}
+with index    #{with_index}
+speedup       #{((without_index / with_index) * 100).to_i}
 }
-bench(%{
-  select * from romeo_and_juliet where line_no = 4001;
-  select * from romeo_and_juliet where line_no = 4101;
-  select * from romeo_and_juliet where line_no = 4201;
-  select * from romeo_and_juliet where line_no = 4301;
-  select * from romeo_and_juliet where line_no = 4401;
-  select * from romeo_and_juliet where line_no = 4501;
-  select * from romeo_and_juliet where line_no = 4601;
-  select * from romeo_and_juliet where line_no = 4701;
-  select * from romeo_and_juliet where line_no = 4801;
-  select * from romeo_and_juliet where line_no = 4901;
-})
-
-
-
 
