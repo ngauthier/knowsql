@@ -1,10 +1,10 @@
 # KnowSQL
 
 ## Goal
- - you don't know what you don't know
+1. you don't know what you don't know
    awareness > complete comprehension
    open the fire hydant: you don't have to drink it all, but I will soak you
- - Easier
+1. Easier
 
 ## Chapter 1: Indexing
  * Basic index (bench - show seq vs idx)
