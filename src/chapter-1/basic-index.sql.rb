@@ -1,17 +1,5 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'active_record'
-
-def bench
-  start = Time.now
-  yield
-  finish = Time.now
-  finish - start
-end
-
-def sql(query)
-  ActiveRecord::Base.connection.execute(query)
-end
+require File.join(File.dirname(__FILE__), '..', 'helper.rb')
 
 text_lines = File.read(File.join(File.dirname(__FILE__), '..', '..', 'data', 'romeo_and_juliet.txt')).split("\n")
 
@@ -22,24 +10,15 @@ end
 
 total_lines = data.size
 
-ActiveRecord::Base.establish_connection({
-  :database => 'knowsql_examples', :adapter => 'postgresql'
-})
 
 sql %{
   drop table if exists romeo_and_juliet_lines;
 
-  drop sequence romeo_and_juliet_lines_id_seq;
-  create sequence romeo_and_juliet_lines_id_seq;
-  
   create table romeo_and_juliet_lines ( 
-    id integer primary key default nextval('romeo_and_juliet_lines_id_seq'),
     line_no integer,
     contents varchar(256) 
   );
 }
-
-class RomeoAndJulietLine < ActiveRecord::Base; end
 
 data.each do |row|
   sql %{insert into romeo_and_juliet_lines (line_no, contents) values (
@@ -47,7 +26,7 @@ data.each do |row|
   );}
 end
 
-puts "Inserted #{RomeoAndJulietLine.count} lines of Romeo and Juliet"
+puts "Inserted Romeo and Juliet"
 
 puts "Performing 1000 finds without an index"
 without_index = bench do
