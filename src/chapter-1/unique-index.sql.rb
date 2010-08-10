@@ -10,6 +10,7 @@ sql %{
     id integer primary key default nextval('random_numbers_id_seq'),
     number integer not null
   );
+  create index random_numbers_idx on random_numbers(number);
 }
 
 class RandomNumber < ActiveRecord::Base
@@ -40,7 +41,7 @@ end
 
 sql %{
   delete from random_numbers;
-  create unique index random_numbers_number_idx on random_numbers(number);
+  create unique index random_numbers_unique_idx on random_numbers(number);
 }
 
 pg_duplicates_unique = bench do
