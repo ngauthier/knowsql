@@ -46,9 +46,22 @@ with_index = bench do
   end
 end
 
+
+require 'redis'
+redis = Redis.new
+data.each do |d|
+  redis.set d[:line], d[:content]
+end
+
+redis_bench = bench do
+  1000.times do
+    redis.get rand(total_lines)
+  end 
+end
 puts %{
 without index #{without_index}
 with index    #{with_index}
+redis         #{redis_bench}
 speedup       #{((without_index / with_index) * 100).to_i}
 }
 

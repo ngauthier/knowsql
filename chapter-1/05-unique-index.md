@@ -55,3 +55,17 @@
 # Results
 ## ActiveRecord
 ### Slower, because select is slower than insert
+
+
+!SLIDE
+# Results
+## Redis
+    @@@      
+            overwrite        0.353078
+            don't overwrite  0.531332
+
+!SLIDE
+# Results
+## Redis
+### Faster, but there isn't actually any validation :-)
+
