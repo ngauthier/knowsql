@@ -16,7 +16,7 @@
 
 !SLIDE
 # ActiveRecord
-### Performs a select for the insert
+### Performs a select before the insert
 
 !SLIDE
 # ActiveRecord

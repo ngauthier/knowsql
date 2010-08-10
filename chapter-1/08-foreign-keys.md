@@ -18,7 +18,5 @@
 * associations to invalid objects
 * destruction of parent
 * race conditions
+* many <=> many orphans
 
-!SLIDE
-# Rails validations fail
-## Especially bad with many <=> many
