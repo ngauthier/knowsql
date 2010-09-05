@@ -2,7 +2,6 @@
 # Basic Index
 ## fast lookup
 
-
 !SLIDE
 # Sequential Search
 ## O(n)

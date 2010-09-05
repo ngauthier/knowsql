@@ -19,13 +19,3 @@
 * String Manipulation
 * Math
 * Dates
-
-!SLIDE
-# Unique + Expression
-## Email address verification
-
-
-
-
-
-

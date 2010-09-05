@@ -64,29 +64,7 @@ ar_duplicates_unique = bench do
   end
 end
 
-require 'redis'
-redis = Redis.new
-
-10000.times do |i|
-  redis.set i.to_s, true
-end
-
-redis_normal = bench do
-  1000.times do |i|
-    redis.set i.to_s, i.to_s
-  end
-end
-
-redis_unique = bench do
-  1000.times do |i|
-    redis.setnx i.to_s, i.to_s
-  end
-end
-
-
 puts "PG: #{pg_duplicates}"
 puts "PU: #{pg_duplicates_unique}"
 puts "AR: #{ar_duplicates}"
 puts "AU: #{ar_duplicates_unique}"
-puts "RN: #{redis_normal}"
-puts "RU: #{redis_unique}"

@@ -29,10 +29,6 @@
 # Try to insert 1,000 duplicates
 
 !SLIDE
-# Can't compare PG to AR
-## Compare to themselves
-
-!SLIDE
 # Results
 ## PostgreSQL
     @@@
@@ -41,31 +37,8 @@
 
 !SLIDE
 # Results
-## PostgreSQL
-### Faster, because it doesn't need to do anything
-
-!SLIDE
-# Results
 ## ActiveRecord
     @@@      
                no index   4.493282
                with index 7.240643
-
-!SLIDE
-# Results
-## ActiveRecord
-### Slower, because select is slower than insert
-
-
-!SLIDE
-# Results
-## Redis
-    @@@      
-            overwrite        0.353078
-            don't overwrite  0.531332
-
-!SLIDE
-# Results
-## Redis
-### Faster, but there isn't actually any validation :-)
 
