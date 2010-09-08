@@ -36,20 +36,8 @@
 
 !SLIDE
 # Easy to setup
-    @@@ sql
-    create index my_id on my_table(my_column);
-
-!SLIDE
-# Unique Index
-## Database Validation
-
-!SLIDE
-# Unique Index
-### During record insertion, collision raises error
-
-!SLIDE
-# Unique Index
-### Fast because it's performed during the insert
+    @@@ ruby
+    add_index :table, :column
 
 !SLIDE
 # ActiveRecord
@@ -64,10 +52,15 @@
 ### Double Query
 
 !SLIDE
+# Unique Index in DB
+## Detects collision while doing the insert
+
+!SLIDE
 # Insert 10,000 numbers
 
 !SLIDE
 # Try to insert 1,000 duplicates
+
 
 !SLIDE
 # Results
@@ -84,23 +77,22 @@
                with index 7.240643
 
 !SLIDE
+# Easy to setup
+    @@@ ruby
+    add_index :table, :column, :unique => true
+
+!SLIDE
 # Indexing on Expressions
 
 !SLIDE
 # Frequent Query
 ## Case-insensitive login
-    @@@ sql
-            SELECT * FROM users 
-            WHERE lower(login) = 'nick';
+    @@@ ruby
+    User.find(:first, :conditions => 
+      ['lower(login) = ?', username]
+    )
 
 !SLIDE
 # Index on Expression
-    @@@ sql
-        CREATE INDEX users_login_lower_idx
-        ON users (lower(login));
-
-!SLIDE bullets
-# ANY Expression
-* String Manipulation
-* Math
-* Dates
+    @@@ ruby
+    add_index :users, 'lower(login)'
