@@ -1,15 +1,24 @@
 h1 {
-  color: #786e6e;
-  font-family: sans-serif;
+  color: #64c8ca;
+  font-size: 80px;
 }
 
 h2 {
-  color: #64c8ca;
-  font-size: 3.5em;
+  color: #786e6e;
+  font-size: 56px;
+}
+
+h3 {
+  color: #786e6e;
+  font-size: 40px;
 }
 
 .slide {
   background-image: url('/image/sls-209x36.png');
   background-repeat: no-repeat;
   background-position: right bottom;
+}
+
+a, a:hover, a:visited {
+  color: #64c8ca;
 }

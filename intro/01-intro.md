@@ -10,4 +10,7 @@
 ### Nick Gauthier
 ### SmartLogic Solutions
 
+!SLIDE
+# Goal
+## Make your life EASIER
 

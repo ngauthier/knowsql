@@ -1,7 +1,9 @@
 { 
   "name": "KnowSQL",
   "sections": [ 
+    {"section":"intro"},
     {"section":"chapter-1"},
+    {"section":"chapter-2"},
     {"section":"conclusion"}
   ]
 }
