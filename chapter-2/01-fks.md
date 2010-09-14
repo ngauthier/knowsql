@@ -9,7 +9,7 @@
 !SLIDE
 # Foreign Key
 ## Comment belongs to Post
-### comment.post_id => post.id
+### comment.post\_id => post.id
 
 !SLIDE
 # Rails
@@ -48,14 +48,14 @@
 # Rails validations are broken:
 * .save(:validations => false)
 * .delete
-* .update_all
+* .update\_all
 * .connection.execute
 * db console
 
 !SLIDE bullets incremental
 # DB validations are broken:
 * ...
-* raw editing database files on the fs?
+* raw editing database files on the file system?
 
 !SLIDE
 # DB validations are fast
@@ -64,7 +64,10 @@
 # Foreigner Gem
 ### [http://github.com/matthuhiggins/foreigner](http://github.com/matthuhiggins/foreigner])
     @@@ ruby
-    gem 'matthuhiggins-foreigner', :require => 'foreigner'
+
+    gem 'matthuhiggins-foreigner', 
+        :require => 'foreigner'
+
     create_table :comments do |t|
       t.references :posts, :foreign_key => true
     end
