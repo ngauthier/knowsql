@@ -62,7 +62,7 @@
 
 !SLIDE
 # Foreigner Gem
-### [http://github.com/matthuhiggins/foreigner](http://github.com/matthuhiggins/foreigner])
+### [http://github.com/matthuhiggins/foreigner](http://github.com/matthuhiggins/foreigner)
     @@@ ruby
 
     gem 'matthuhiggins-foreigner', 
