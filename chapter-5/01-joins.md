@@ -6,7 +6,7 @@
 # Example Schema
 * User [id, name]
 * Product [id, name, price]
-* Order [user_id, date]
+* Order [id, user_id, date]
 * OrderProduct [product_id, order_id]
 
 !SLIDE bullets
@@ -34,35 +34,69 @@
 !SLIDE bullets
 # Clearly not the best solution
 * 1 query for orders
-* O queries for products
-* O queries for users
+* O(orders) queries for products
+* O(orders) queries for users
 
 !SLIDE
 # First, join the tables
     @@@ sql
-    SELECT users.name as user_name,
-           orders.date as order_date,
-           products.price as product_price,
-    FROM orders
-      join orders_products on (orders_products.order_id = order.id)
-      join products on (orders_products.product_id = products.id)
-      join users on (orders.user_id = users.id)
+    SELECT users.name AS user_name,
+           orders.id AS order_id,
+           orders.date AS order_date,
+           products.id AS product_id,
+           products.price AS product_price
 
-    RESULTS
+    FROM orders
+      JOIN orders_products ON
+        (orders_products.order_id = orders.id)
+      JOIN products ON
+        (orders_products.product_id = products.id)
+      JOIN users ON
+        (orders.user_id = users.id)
 
 !SLIDE
-# Aggregate the product prices
-    @@@ sql
-    SELECT users.name as user_name,
-           orders.date as order_date,
-           sum(products.price) as total_cost,
-    FROM orders
-      join orders_products on (orders_products.order_id = order.id)
-      join products on (orders_products.product_id = products.id)
-      join users on (orders.user_id = users.id)
-    GROUP BY orders.id
+# First, join the tables
+    @@@ text 
+     user_name | order_id | order_date | p_id | price 
+    -----------+----------+------------+------+------
+     alice     |        1 | 2010-01-01 |    1 |    10
+     alice     |        1 | 2010-01-01 |    2 |     7
+     alice     |        2 | 2010-01-05 |    3 |    35
+     alice     |        2 | 2010-01-05 |    3 |    35
+     bob       |        3 | 2010-01-08 |    1 |    10
+     bob       |        3 | 2010-01-08 |    2 |     7
+     bob       |        3 | 2010-01-08 |    3 |    35
 
-    RESULTS
+
+!SLIDE
+# Aggregate the product prices and sort
+    @@@ sql
+    SELECT users.name AS user_name,
+           orders.date AS order_date,
+           sum(products.price) AS total_cost
+
+    FROM orders
+      JOIN orders_products ON
+        (orders_products.order_id = orders.id)
+      JOIN products ON
+        (orders_products.product_id = products.id)
+      JOIN users ON
+        (orders.user_id = users.id)
+
+    GROUP BY orders.id, users.name, orders.date
+    ORDER BY total_cost DESC
+
+!SLIDE
+# Aggregate the product prices and sort
+    @@@ text
+     user_name |     order_date      | total_cost 
+    -----------+---------------------+------------
+     alice     | 2010-01-05 00:00:00 |         70
+     bob       | 2010-01-08 00:00:00 |         52
+     alice     | 2010-01-01 00:00:00 |         17
+
+
+
 
 !SLIDE bullets
 # Aggregation requires grouping
@@ -74,28 +108,28 @@
 # For ease of abstraction, make it a View
     @@@ sql
     CREATE VIEW order_costs AS
-      SELECT users.name as user_name,
-             orders.date as order_date,
-             sum(products.price) as total_cost,
+      SELECT users.name AS user_name,
+             orders.date AS order_date,
+             sum(products.price) AS total_cost
       FROM orders
-        join orders_products on (orders_products.order_id = order.id)
-        join products on (orders_products.product_id = products.id)
-        join users on (orders.user_id = users.id)
-      GROUP BY orders.id
+        JOIN orders_products ON
+          (orders_products.order_id = orders.id)
+        JOIN products ON
+          (orders_products.product_id = products.id)
+        JOIN users ON
+          (orders.user_id = users.id)
+      GROUP BY orders.id, users.name, orders.date
+      ORDER BY total_cost DESC
 
 !SLIDE
 # Now we can use the view in Rails
     @@@ ruby
-    class OrderCost < ActiveRecord::Base ; end
+    class OrderCost < ActiveRecord::Base
+    end
+
     OrderCost.all.each do |order_cost|
       puts order_cost.user_name
       puts order_cost.order_date
       puts order_cost.total_cost
     end
-
-
-
-
-
-
 
