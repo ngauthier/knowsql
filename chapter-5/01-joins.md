@@ -57,19 +57,19 @@
 !SLIDE
 # First, join the tables
     @@@ text 
-     user_name | order_id | order_date | p_id | price 
-    -----------+----------+------------+------+------
-     alice     |        1 | 2010-01-01 |    1 |    10
-     alice     |        1 | 2010-01-01 |    2 |     7
-     alice     |        2 | 2010-01-05 |    3 |    35
-     alice     |        2 | 2010-01-05 |    3 |    35
-     bob       |        3 | 2010-01-08 |    1 |    10
-     bob       |        3 | 2010-01-08 |    2 |     7
-     bob       |        3 | 2010-01-08 |    3 |    35
+     u_name | o_id | order_date | p_id | price 
+    --------+------+------------+------+------
+     alice  |    1 | 2010-01-01 |    1 |    10
+     alice  |    1 | 2010-01-01 |    2 |     7
+     alice  |    2 | 2010-01-05 |    3 |    35
+     alice  |    2 | 2010-01-05 |    3 |    35
+     bob    |    3 | 2010-01-08 |    1 |    10
+     bob    |    3 | 2010-01-08 |    2 |     7
+     bob    |    3 | 2010-01-08 |    3 |    35
 
 
 !SLIDE
-# Aggregate the product prices and sort
+# Aggregate and sort
     @@@ sql
     SELECT users.name AS user_name,
            orders.date AS order_date,
@@ -87,13 +87,13 @@
     ORDER BY total_cost DESC
 
 !SLIDE
-# Aggregate the product prices and sort
+# Aggregate and sort
     @@@ text
-     user_name |     order_date      | total_cost 
-    -----------+---------------------+------------
-     alice     | 2010-01-05 00:00:00 |         70
-     bob       | 2010-01-08 00:00:00 |         52
-     alice     | 2010-01-01 00:00:00 |         17
+     user_name | order_date | total_cost 
+    -----------+------------+------------
+     alice     | 2010-01-05 |         70
+     bob       | 2010-01-08 |         52
+     alice     | 2010-01-01 |         17
 
 
 
