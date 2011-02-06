@@ -1,0 +1,16 @@
+h1 {
+  font-size: 80px;
+}
+
+h2 {
+  font-size: 56px;
+}
+
+h3 {
+  font-size: 40px;
+}
+
+a, a:hover, a:visited {
+  color: #64c8ca;
+}
+
