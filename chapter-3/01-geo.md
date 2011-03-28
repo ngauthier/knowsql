@@ -12,53 +12,62 @@
 ## Geospatial indexing and querying for PostgreSQL
 
 !SLIDE
-# Easy Ubuntu Install
-### Add PPA ppa:ubuntugis/ubuntugis-unstable
-### Install postgresql-8.4-postgis
+# Easy Install
+    @@@ 
+    apt-get install \
+      postgresql-8.4-postgis
+    
+    brew install postgis gdal
 
 !SLIDE
 # Setup the language
+### Navigate to system directory for postgis.sql
+### e.g. /usr/share/postgresql/8.4/contrib/postgis-1.5
     @@@ sql
     createdb my_db
     createlang plpgsql my_db
-    psql -d my_db -f /usr/share/postgresql/8.4/
-      contrib/postgis-1.5/postgis.sql
-    psql -d my_db -f /usr/share/postgresql/8.4/
-      contrib/postgis-1.5/spatial_ref_sys.sql
-    psql -d my_db -f /usr/share/postgresql/8.4/
-      contrib/postgis_comments.sql
+    psql -d my_db -f postgis.sql
+    psql -d my_db -f spatial_ref_sys.sql
+    psql -d my_db -f postgis_comments.sql
 
 !SLIDE
 # Setup your database
-    @@@ sql
-    CREATE sequence points_id_seq;
-    CREATE TABLE points (
-      id integer PRIMARY KEY
-      DEFAULT NEXTVAL('points_id_seq')
-    );
-    SELECT AddGeometryColumn(
-      'points', 'location', 4326, 'POINT', 2
-    );
-    CREATE INDEX points_location_idx 
-      ON points USING GIST ( location );
+    @@@ ruby
+    create_table :points do |t|
+      t.string :name
+    end
+    execute %{
+      SELECT AddGeometryColumn(
+        'points', 'location', 
+        4326, 'POINT', 2
+      );
+      CREATE INDEX points_location_idx 
+        ON points USING GIST (location);
+    }
+
  
 !SLIDE
 # Create a point
-    @@@ sql
-    INSERT INTO points(location) VALUES (
-      ST_GeomFromText(
-        'POINT(-76.615657 39.327052)'
+    @@@ ruby
+    point = Point.create(
+      :name => "New York",
+      :location => Point.from_lon_lat(
+        -74.009399,40.708751
       )
-    );
+    )
+    point.reload
+    point.location.lat
+      => 40.708751
  
 !SLIDE
 # Find points in a radius
-    @@@ sql
-    SELECT * FROM points
-    WHERE ST_Distance(
-      location,
-      ST_GeomFromText('POINT(-76 39)')
-    ) < 1;
+    @@@ ruby
+    Point.where(%{
+      ST_Distance(
+        location,
+        ST_GeomFromText('POINT(-76 39)')
+      ) < 1
+    });
 
 !SLIDE
 # In Rails
@@ -106,5 +115,4 @@
 # Can't touch this
 ### MongoDB: flat earth model, only distance calculation
 ### MySQL: containment via rectangles, no compound indexing
-### SQL Server: pretty good ... just icky
-### Sphinx + Solr: additional layer and pretty immature
+### SQL Server: pretty good if you're on MS

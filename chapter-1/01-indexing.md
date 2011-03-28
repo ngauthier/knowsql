@@ -35,20 +35,17 @@
               speedup       704%
 
 !SLIDE
-# Easy to setup
+# in your migration
     @@@ ruby
     add_index :table, :column
 
 !SLIDE
 # ActiveRecord
-## validates_uniqueness_of
+## validates\_uniqueness\_of
 
 !SLIDE
 # ActiveRecord
 ### Performs a select before the insert
-
-!SLIDE
-# ActiveRecord
 ### Double Query
 
 !SLIDE
@@ -56,10 +53,9 @@
 ## Detects collision while doing the insert
 
 !SLIDE
-# Insert 10,000 numbers
-
-!SLIDE
-# Try to insert 1,000 duplicates
+# Benchmark
+## Insert 10,000 numbers
+## Try to insert 1,000 duplicates
 
 
 !SLIDE
@@ -79,7 +75,8 @@
 !SLIDE
 # Easy to setup
     @@@ ruby
-    add_index :table, :column, :unique => true
+    add_index :table, :column,
+              :unique => true
 
 !SLIDE
 # Indexing on Expressions
@@ -88,8 +85,8 @@
 # Frequent Query
 ## Case-insensitive login
     @@@ ruby
-    User.find(:first, :conditions => 
-      ['lower(login) = ?', username]
+    User.where(
+      'lower(login) = ?', username
     )
 
 !SLIDE

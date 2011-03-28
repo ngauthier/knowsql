@@ -1,16 +1,4 @@
-h1 {
-  font-size: 80px;
+a, a:visited, a:hover, a:active {
+  color: blue;
+  text-decoration: none;
 }
-
-h2 {
-  font-size: 56px;
-}
-
-h3 {
-  font-size: 40px;
-}
-
-a, a:hover, a:visited {
-  color: #00c;
-}
-

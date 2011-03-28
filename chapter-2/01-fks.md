@@ -9,7 +9,7 @@
 !SLIDE
 # Foreign Key
 ## Comment belongs to Post
-### comment.post\_id => post.id
+### comments.post\_id => posts.id
 
 !SLIDE
 # Rails
@@ -18,7 +18,7 @@
       belongs_to :post
       validates_presence_of :post
       validates_presence_of :post_id
-      validates_numericality_od :post_id
+      validates_numericality_of :post_id
     end
 
 !SLIDE
@@ -44,18 +44,17 @@
     delete from posts where id = 5;
      => Error!
 
-!SLIDE bullets incremental
-# Rails validations are broken:
+!SLIDE bullets
+# Rails validation bypass:
 * .save(:validations => false)
 * .delete
 * .update\_all
 * .connection.execute
 * db console
 
-!SLIDE bullets incremental
-# DB validations are broken:
-* ...
-* raw editing database files on the file system?
+!SLIDE bullets 
+# DB validation bypass:
+* raw editing database files on the file system
 
 !SLIDE
 # DB validations are fast
@@ -69,9 +68,10 @@
         :require => 'foreigner'
 
     create_table :comments do |t|
-      t.references :posts, :foreign_key => true
+      t.references :posts,
+        :foreign_key => true
     end
 
 !SLIDE
 # Foreign Keys
-## What's your excuse?
+## Quick and easy relational integrity
