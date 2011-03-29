@@ -3,88 +3,80 @@
 ## The Shoulders of Giants
 
 !SLIDE
-# Installation
+# Installation on Ubuntu
 ## Install postgresql-contrib
+### OS X's postgresql comes with contrib
 
 !SLIDE
 # chkpass
 ## Encrypted column type designed for passwords
     @@@ bash
-    psql database_name -f \ 
-    /usr/share/postgresql/8.4/contrib/chkpass.sql
+    psql database_name -f chkpass.sql
 
 !SLIDE
 # chkpass
-    @@@ sql
-    create table users 
-      (name varchar(256), password chkpass);
-
-    insert into users 
-      (name, password) values ('nick', 'monkey');
-    
-    select * from users;
-       name |    password    
-      ------+----------------
-       nick | :ggn3QyV4c5VKw
+    @@@ ruby
+    def self.up
+      create_table :users do |t|
+        t.string :name
+        t.column :password, :chkpass
+        t.timestamps
+      end
+    end
 
 !SLIDE
 # chkpass
-    @@@ sql
-    select * from users 
-    where name = 'nick' and password = 'monkey';
-      name |    password    
-      ------+----------------
-       nick | :ggn3QyV4c5VKw
-      (1 row)
-
-    select * from users 
-    where name = 'nick' and password = 'secret';
-       name | password 
-      ------+----------
-      (0 rows)
+    @@@ ruby
+    nick = User.create(
+      :name => 'Nick', :password => 'monkey'
+    )
+    #<User name:"Nick", password:"monkey"> 
+    nick.reload
+    #<User name:"Nick", password:":E5m8WfMYmeo22">
+    User.where(:name => 'Nick', :password => 'monkey')
+    [#<User name:"Nick", password:":E5m8WfMYmeo22"] 
 
 !SLIDE
 # hstore
 ## Store and query hashes
     @@@ bash
-    psql database_name -f \ 
-    /usr/share/postgresql/8.4/contrib/hstore.sql
+    psql database_name -f hstore.sql
 
 !SLIDE
 # hstore
-    @@@ sql
-    create table user_profiles
-      (name varchar(256), profile hstore);
-    insert into user_profiles (name, profile)
-      values
-      ('nick', '"color"=>"blue", "music"=>"indie"'),
-      ('joe', '"color"=>"blue", "music"=>"rock"');
-
-    select * from user_profiles;
-     name |                    profile                    
-    ------+----------------------------------
-     nick | "color"=>"blue", "music"=>"indie"
-     joe  | "color"=>"blue", "music"=>"rock"
-    (2 rows)
+    @@@ ruby
+    def self.up
+      create_table :users do |t|
+        t.string :name
+        t.column :profile, :hstore
+        t.timestamps
+      end
+    end
 
 !SLIDE
 # hstore
-    @@@ sql
-    select * from user_profiles 
-    where profile::hstore->'color' = 'blue';
-     name |              profile              
-    ------+-----------------------------------
-     nick | "color"=>"blue", "music"=>"indie"
-     joe  | "color"=>"blue", "music"=>"rock"
-    (2 rows)
+    @@@ ruby
+    User.create(
+      :name => 'Nick',
+      :profile => %{
+        "color"=>"blue", "music"=>"indie"
+      }
+    )
+    User.create(
+      :name => 'Joe',
+      :profile => %{
+        "color"=>"blue", "music"=>"rock"
+      }
+    )
 
-    select * from user_profiles
-    where profile::hstore->'music' = 'rock';
-     name |             profile              
-    ------+----------------------------------
-     joe  | "color"=>"blue", "music"=>"rock"
-    (1 row)
+!SLIDE
+# hstore
+    @@@ ruby
+    User.where(%{profile::hstore->'color'='blue'})
+    [#<User name:"Nick">, #<User name:"Joe">]
 
+    User.where(%{profile::hstore->'music'='rock'})
+    [#<User name:"Joe">]
 
 !SLIDE
 # ltree
@@ -150,46 +142,27 @@
 
 !SLIDE
 # Setup some data
-    @@@ sql
-    create table posts
-      (id int, name varchar(256), body text);
-    create table comments
-      (id int, post_id int, body text);
-    insert into posts (id, name, body) values 
-      (1, 'cool code', 'here is some cool code'),
-      (2, 'lunch today', 'I ate a sandwich');
-    insert into comments (id, post_id, body) values 
-      (1, 1, 'that is cool'),
-      (2, 1, 'pretty sweet'),
-      (3, 2, 'sandwiches rule');
+### Post "cool code" has one two comments
+### Post "lunch today" has one comment
 
 !SLIDE
-# Query our cloud
-    @@@ sql
-    select posts.name, count(comments.id)
-    from posts join comments on 
-      posts.id = comments.post_id
-    group by posts.name;
-        name     | count 
-    -------------+-------
-     cool code   |     2
-     lunch today |     1
-    (2 rows)
+# Query
+    @@@ ruby
+    Post.select(%{
+      xmlelement(
+        name span,
+        xmlattributes(
+          count(comments.id) as "data-count"
+        ),
+        posts.name
+      )
+    }).joins(%{
+      join comments on posts.id = comments.post_id
+    }).group('posts.name')
 
 !SLIDE
-# Output XML
-    @@@ sql
-    select xmlelement(
-      name span,
-      xmlattributes(
-        count(comments.id) as "data-count"
-      ),
-      posts.name
-    )
-    from posts join comments 
-      on posts.id = comments.post_id
-    group by posts.name;
-
+# Result
+    @@@ text
                    xmlelement                
     -----------------------------------------
      <span data-count="1">lunch today</span>
