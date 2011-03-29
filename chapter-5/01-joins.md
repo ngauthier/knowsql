@@ -6,28 +6,28 @@
 # Example Schema
 * User [id, name]
 * Product [id, name, price]
-* Order [id, user_id, date]
-* OrderProduct [product_id, order_id]
+* Order [id, user\_id, date]
+* OrderProduct [product\_id, order\_id]
 
 !SLIDE bullets
 # Order Report Page
-* Show all orders sorted by total cost
+* Show top ten orders sorted by total cost
 * Show the user name, date, and total cost
 
 !SLIDE
 # Basic ActiveRecord
     @@@ ruby
-    orders = Order.all
-    orders.sort! do |a,b|
-      a.products.inject(0){|p,s| s + p.price} <=>
-        b.products.inject(0){|p,s| s + p.price}
+    o = Order.all
+    o.sort! do |a,b|
+      a.products.sum(&:price) <=>
+      b.products.sum(&:price)
     end
-    orders = orders[0..10]
-    orders.map do |order|
-      {
-        :user_name => order.user.name,
+    o = o[0..10]
+    o.map do |order|
+      { :user_name => order.user.name,
         :user_date => order.date,
-        :total_cost => order.products.inject(0){|p,s| s + p.price}
+        :total_cost => 
+          order.products.sum(&:price)
       }
     end
 
@@ -39,20 +39,20 @@
 
 !SLIDE
 # First, join the tables
-    @@@ sql
-    SELECT users.name AS user_name,
-           orders.id AS order_id,
-           orders.date AS order_date,
-           products.id AS product_id,
-           products.price AS product_price
-
-    FROM orders
-      JOIN orders_products ON
-        (orders_products.order_id = orders.id)
-      JOIN products ON
-        (orders_products.product_id = products.id)
-      JOIN users ON
-        (orders.user_id = users.id)
+    @@@ ruby
+    Order.select(%{
+      users.name as user_name,
+      orders.id as order_id,
+      orders.created_at as order_date,
+      products.id as product_id,
+      products.price as product_price
+    }).joins(%{
+      join order_products on
+       order_products.order_id = orders.id
+      join products on 
+       order_products.product_id = products.id
+      join users on orders.user_id = users.id
+    })
 
 !SLIDE
 # First, join the tables
@@ -70,21 +70,19 @@
 
 !SLIDE
 # Aggregate and sort
-    @@@ sql
-    SELECT users.name AS user_name,
-           orders.date AS order_date,
-           sum(products.price) AS total_cost
-
-    FROM orders
-      JOIN orders_products ON
-        (orders_products.order_id = orders.id)
-      JOIN products ON
-        (orders_products.product_id = products.id)
-      JOIN users ON
-        (orders.user_id = users.id)
-
-    GROUP BY orders.id, users.name, orders.date
-    ORDER BY total_cost DESC
+    @@@ ruby
+    Order.select(%{
+      users.name as user_name,
+      orders.created_at as order_date,
+      sum(products.price) as total_cost
+    }).joins(%{
+      join order_products on
+       order_products.order_id = orders.id
+      join products on 
+       order_products.product_id = products.id
+      join users on orders.user_id = users.id
+    }).group('orders.id, user_name, order_date').
+    order('total_cost DESC')
 
 !SLIDE
 # Aggregate and sort
@@ -105,24 +103,41 @@
 * Thus, prices are summed per-order
 
 !SLIDE
-# For ease of abstraction, make it a View
-    @@@ sql
-    CREATE VIEW order_costs AS
-      SELECT users.name AS user_name,
-             orders.date AS order_date,
-             sum(products.price) AS total_cost
-      FROM orders
-        JOIN orders_products ON
-          (orders_products.order_id = orders.id)
-        JOIN products ON
-          (orders_products.product_id = products.id)
-        JOIN users ON
-          (orders.user_id = users.id)
-      GROUP BY orders.id, users.name, orders.date
-      ORDER BY total_cost DESC
+# Make a view
+    @@@ ruby
+    Order.select(%{
+      users.name as user_name,
+      orders.created_at as order_date,
+      sum(products.price) as total_cost
+    }).joins(%{
+      join order_products on
+       order_products.order_id = orders.id
+      join products on 
+       order_products.product_id = products.id
+      join users on orders.user_id = users.id
+    }).group('orders.id, user_name, order_date').
+    order('total_cost DESC').to_sql # <----
 
 !SLIDE
-# Now we can use the view in Rails
+# Make a view
+### Copy that SQL into a migration
+    @@@ ruby
+    execute %{
+      CREATE VIEW order_costs AS
+      SELECT 
+        users.name as user_name,
+        orders.created_at as order_date,
+        sum(products.price) as total_cost
+       FROM "orders" join order_products on
+         order_products.order_id = orders.id
+        join products on 
+         order_products.product_id = products.id
+        join users on orders.user_id = users.id GROUP BY orders.id, user_name, order_date ORDER BY total_cost DESC
+    }
+
+!SLIDE
+# Views act like Models
+## Read Only
     @@@ ruby
     class OrderCost < ActiveRecord::Base
     end

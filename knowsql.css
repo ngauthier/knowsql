@@ -2,3 +2,9 @@ a, a:visited, a:hover, a:active {
   color: blue;
   text-decoration: none;
 }
+
+code {
+  font-size: 36px;
+  line-height: 38px;
+  font-family: "Inconsolata Medium", monospace;
+}
