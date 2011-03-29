@@ -19,20 +19,17 @@
 !SLIDE
 # Sample Data
 ## 100,000 wikipedia english article titles
-    @@@ text
-           Table "public.wikipedia_titles"
-     Column |          Type          | Modifiers 
-    --------+------------------------+-----------
-     title  | character varying(256) | 
-
 
 !SLIDE
 # Full text search query:
-    @@@ sql
-    select * from wikipedia_titles
-    where to_tsvector( 'english', title   ) @@
-          to_tsquery(  'english', 'puppy' );
-## => 
+    @@@ ruby
+    Title.where({
+      to_tsvector('english', title) @@
+      to_tsquery( 'english', 'puppy')
+    })
+
+####  
+
     @@@ text
                      title                 
     ---------------------------------------
@@ -41,40 +38,51 @@
     (2 rows)
 
 !SLIDE
+# Texticle
+    @@@ ruby
+    class Title < ActiveRecord::Base
+      index do
+        title
+      end
+    end
+
+    Title.search('puppy')
+
+!SLIDE
 # Index it!
     @@@ sql
-    CREATE INDEX titles_idx ON wikipedia_titles
-    USING gin(to_tsvector('english', title));
+    CREATE INDEX titles_idx ON
+      wikipedia_titles
+    USING gin(
+      to_tsvector('english', title)
+    );
+
+## or
+
+    @@@ sh
+    rake texticle:migration
 
 !SLIDE
 # Results highlighting
-    @@@ sql
-    SELECT ts_headline('english',
-      'The most common type of search
-    is to find all documents containing given
-    query terms and return them in order of
-    their similarity to the query.',
-      to_tsquery('query & similarity'));
-
-!SLIDE
-# Results highlighting
-    @@@ text
-                 ts_headline                   
-    ---------------------------------------
-     containing given <b>query</b> terms
-     and return them in order of their
-     <b>similarity</b> to the <b>query</b>.
-    
-#### http://www.postgresql.org/docs/9.0/static/textsearch-controls.html#TEXTSEARCH-RANKING
+    @@@ ruby
+    Title.search('puppy').select(%{
+      ts_headline('english', title,
+        to_tsquery('english', 'puppy')
+      ) as headline
+    }).first.headline
+    =>
+    "102_Dalmatians:<b>Puppies</b>_to_the_Rescue"
+### [http://www.postgresql.org/docs/9.0/static/textsearch-controls.html#TEXTSEARCH-RANKING](http://www.postgresql.org/docs/9.0/static/textsearch-controls.html#TEXTSEARCH-RANKING)
 
 !SLIDE
 # Statistics
     @@@ sql
     select * from ts_stat(E'
-      select to_tsvector(''english'', title)
+      select
+      to_tsvector(''english'', title)
       from wikipedia_titles
     ') order by nentry desc limit 25;
-## =>
+### =>
     @@@ text
          word     | ndoc | nentry 
     --------------+------+--------
@@ -82,12 +90,6 @@
      championship | 3557 |   3557
      2007         | 3441 |   3443
      world        | 3281 |   3285
-
-!SLIDE bullets
-# Statistics
-* Takes ~1s, so you should cache it. 
-* Would make a great tag cloud
-* (after converting lexemes to tokens)
 
 !SLIDE
 # Performance
