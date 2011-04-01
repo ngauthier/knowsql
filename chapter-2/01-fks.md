@@ -12,7 +12,7 @@
 ### comments.post\_id => posts.id
 
 !SLIDE
-# Rails
+# You can do this in Rails
     @@@ ruby
     class Comment < ActiveRecord::Base
       belongs_to :post
@@ -22,7 +22,7 @@
     end
 
 !SLIDE
-# Rails
+# But you can also do this
     @@@ ruby
     p = Post.new
     c = Comment.new(:post => p)
@@ -34,7 +34,7 @@
 
 !SLIDE bullets
 # Rails 
-## Validations are run when valid? is called
+## Validations are run only when valid? is called
 ### And they're really slow!
 
 !SLIDE

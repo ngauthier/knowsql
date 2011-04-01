@@ -6,7 +6,7 @@
 # Many Solutions
 
 !SLIDE bullets
-# Desired attributes:
+# Desired attributes
 * Fast (enough)
 * Easy
 
@@ -23,7 +23,7 @@
 !SLIDE
 # Full text search query:
     @@@ ruby
-    Title.where({
+    Title.where(%{
       to_tsvector('english', title) @@
       to_tsquery( 'english', 'puppy')
     })
@@ -39,6 +39,7 @@
 
 !SLIDE
 # Texticle
+### [https://github.com/tenderlove/texticle](https://github.com/tenderlove/texticle)
     @@@ ruby
     class Title < ActiveRecord::Base
       index do
@@ -47,7 +48,6 @@
     end
 
     Title.search('puppy')
-
 !SLIDE
 # Index it!
     @@@ sql
@@ -64,6 +64,7 @@
 
 !SLIDE
 # Results highlighting
+### [http://www.postgresql.org/docs/9.0/static/textsearch-controls.html](http://www.postgresql.org/docs/9.0/static/textsearch-controls.html)
     @@@ ruby
     Title.search('puppy').select(%{
       ts_headline('english', title,
@@ -72,7 +73,6 @@
     }).first.headline
     =>
     "102_Dalmatians:<b>Puppies</b>_to_the_Rescue"
-### [http://www.postgresql.org/docs/9.0/static/textsearch-controls.html#TEXTSEARCH-RANKING](http://www.postgresql.org/docs/9.0/static/textsearch-controls.html#TEXTSEARCH-RANKING)
 
 !SLIDE
 # Statistics

@@ -14,8 +14,7 @@
 !SLIDE
 # Easy Install
     @@@ 
-    apt-get install \
-      postgresql-8.4-postgis
+    apt-get install postgresql-8.4-postgis
     
     brew install postgis gdal
 
@@ -76,20 +75,12 @@
 ## Spatial Adapter
 ### [http://github.com/fragility/spatial\_adapter](http://github.com/fragility/spatial_adapter)
 
-!SLIDE
+!SLIDE bullets
 # Will it blend?
-
-!SLIDE
-# 8,000,000 points
-
-!SLIDE
-# 5 years of data
-
-!SLIDE
-# Single EC2 Large @ 400rpm
-
-!SLIDE
-# Query: "What happened on my block last week?"
+* 8,000,000 points
+* 5 years of data
+* Single EC2 Large @ 2000rpm
+* Query: "What happened on my block last week?"
 
 !SLIDE
 # Avg 23ms response time
@@ -111,8 +102,3 @@
 ### Distance calculation
 ### Area computation
 
-!SLIDE
-# Can't touch this
-### MongoDB: flat earth model, only distance calculation
-### MySQL: containment via rectangles, no compound indexing
-### SQL Server: pretty good if you're on MS

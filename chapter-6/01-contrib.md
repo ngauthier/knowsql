@@ -18,7 +18,7 @@
     @@@ ruby
     def self.up
       create_table :users do |t|
-        t.string :name
+        t.column :name,     :string
         t.column :password, :chkpass
         t.timestamps
       end
@@ -33,8 +33,10 @@
     #<User name:"Nick", password:"monkey"> 
     nick.reload
     #<User name:"Nick", password:":E5m8WfMYmeo22">
-    User.where(:name => 'Nick', :password => 'monkey')
-    [#<User name:"Nick", password:":E5m8WfMYmeo22"] 
+    User.where(
+      :name => 'Nick', :password => 'monkey'
+    ).first
+    #<User name:"Nick", password:":E5m8WfMYmeo22">
 
 !SLIDE
 # hstore
@@ -47,7 +49,7 @@
     @@@ ruby
     def self.up
       create_table :users do |t|
-        t.string :name
+        t.column :name,    :string
         t.column :profile, :hstore
         t.timestamps
       end
