@@ -45,8 +45,8 @@
 
 !SLIDE
 # ActiveRecord
-### Performs a select before the insert
-### Double Query
+## Performs a select before the insert
+## Double Query
 
 !SLIDE
 # Unique Index in DB
@@ -86,7 +86,7 @@
 ## Case-insensitive login
     @@@ ruby
     User.where(
-      'lower(login) = ?', username
+      'lower(login) = ?', username.downcase
     )
 
 !SLIDE

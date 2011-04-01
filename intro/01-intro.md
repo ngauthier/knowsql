@@ -12,3 +12,10 @@
 ### [ngauthier@shortmail.com](mailto:ngauthier@shortmail.com)
 ### [http://knowsql.heroku.com](http://knowsql.heroku.com)
 ### [http://github.com/ngauthier/knowsql](http://github.com/ngauthier/knowsql)
+
+!SLIDE
+# KnowSQL
+### Database tips and tricks to make your life easier
+
+!SLIDE
+# PostgreSQL

@@ -24,11 +24,12 @@
 !SLIDE
 # But you can also do this
     @@@ ruby
-    p = Post.new
-    c = Comment.new(:post => p)
+    p = Post.create
+    c = Comment.create(:post => p)
     p.destroy
      => true
-    c.reload; c.valid?
+    c.reload
+    c.valid?
      => false
     # but it's in the DB!
 
