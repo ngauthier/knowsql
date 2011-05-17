@@ -14,15 +14,6 @@
 # B-Tree Search
 ## O(log(n))
 
-!SLIDE center
-![1-10.png](1-10.png)
-
-!SLIDE center
-![1-10.png](1-100.png)
-
-!SLIDE center
-![1-10.png](1-1000.png)
-
 !SLIDE
 # Romeo and Juliet
 ## One DB record for each line

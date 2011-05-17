@@ -89,7 +89,6 @@
 ## Controller action + JSON: 14ms
 
 !SLIDE center
-# Remember compound indices from chapter 1?
 ## Compound index on space and time
 ![Spacetime](spacetime.png)
 #### [http://en.wikipedia.org/wiki/Spacetime](http://en.wikipedia.org/wiki/Spacetime)

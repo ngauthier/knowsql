@@ -9,6 +9,7 @@
 # Desired attributes
 * Fast (enough)
 * Easy
+* No extra daemon
 
 !SLIDE bullets
 # Full text search features
